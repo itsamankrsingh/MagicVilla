@@ -2,7 +2,6 @@
 using MagicVillaWebAPI.Interfaces;
 using MagicVillaWebAPI.Models;
 using MagicVillaWebAPI.Models.Dto;
-using MagicVillaWebAPI.Repository;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -16,7 +15,7 @@ namespace MagicVillaWebAPI.Controllers
         private readonly ILogging _logger;
         private readonly IVillaRepository _dbVilla;
         private readonly IMapper _mapper;
-        public VillaAPIController(ILogging logger, VillaRepository dbVilla, IMapper mapper)
+        public VillaAPIController(ILogging logger, IVillaRepository dbVilla, IMapper mapper)
         {
             _logger = logger;
             _dbVilla = dbVilla;
