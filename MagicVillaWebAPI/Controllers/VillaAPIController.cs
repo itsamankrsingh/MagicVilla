@@ -59,12 +59,14 @@ namespace MagicVillaWebAPI.Controllers
                 {
                     _logger.Log($"GetVilla Error with id: {id}", LogLevel.Error);
                     _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
                 var villa = await _dbVilla.GetAsync(x => x.Id == id);
                 if (villa == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.IsSuccess = false;
                     return NotFound(_response);
                 }
                 _response.Result = _mapper.Map<VillaDto>(villa);
@@ -167,6 +169,7 @@ namespace MagicVillaWebAPI.Controllers
                 await _dbVilla.UpdateAsync(model);
                 _response.StatusCode = HttpStatusCode.NoContent;
                 _response.IsSuccess = true;
+                _response.Result = model;
                 return Ok(_response);
             }
             catch (Exception ex)
