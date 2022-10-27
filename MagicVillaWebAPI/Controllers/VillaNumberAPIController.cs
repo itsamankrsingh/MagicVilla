@@ -15,12 +15,14 @@ namespace MagicVillaWebAPI.Controllers
         protected APIResponse _response;
         private readonly IMapper _mapper;
         private readonly IVillaNumberRepository _dbVillaNumbers;
-        public VillaNumberAPIController(ILogging logger, IVillaNumberRepository dbVillaNumbers, IMapper mapper)
+        private readonly IVillaRepository _dbVilla;
+        public VillaNumberAPIController(ILogging logger, IVillaNumberRepository dbVillaNumbers, IMapper mapper, IVillaRepository dbVilla)
         {
             _logger = logger;
             _dbVillaNumbers = dbVillaNumbers;
             _mapper = mapper;
             this._response = new();
+            _dbVilla = dbVilla;
         }
         [HttpGet]
         [ProducesResponseType(StatusCodes.Status200OK)]
@@ -95,7 +97,12 @@ namespace MagicVillaWebAPI.Controllers
                     };
                     return BadRequest(_response);
                 }
-                if (await _dbVillaNumbers.GetAsync(x => x.VillaNo == createDto.VillaNo) != null)
+                if (await _dbVilla.GetAsync((u => u.Id == createDto.VillaID), false) == null)
+                {
+                    ModelState.AddModelError("InvalidVillaIdError", "VillaId does not Exists!");
+                    return BadRequest(ModelState);
+                }
+                if (await _dbVillaNumbers.GetAsync((x => x.VillaNo == createDto.VillaNo), false) != null)
                 {
                     ModelState.AddModelError("UniqueVillaNoRequiredError", "Villa already Exists!");
                     return BadRequest(ModelState);
@@ -161,6 +168,11 @@ namespace MagicVillaWebAPI.Controllers
                         "Bad Request"
                     };
                     return BadRequest(_response);
+                }
+                if (await _dbVilla.GetAsync((u => u.Id == updateDto.VillaID), false) == null)
+                {
+                    ModelState.AddModelError("InvalidVillaIdError", "VillaId does not Exists!");
+                    return BadRequest(ModelState);
                 }
                 var villaNumber = await _dbVillaNumbers.GetAsync((x => x.VillaNo == villaNo), false);
                 if (villaNumber == null)
