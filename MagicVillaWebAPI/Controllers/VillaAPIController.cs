@@ -68,7 +68,6 @@ namespace MagicVillaWebAPI.Controllers
                     return NotFound(_response);
                 }
                 _response.Result = _mapper.Map<VillaDto>(villa);
-                _response.IsSuccess = true;
                 _response.StatusCode = HttpStatusCode.OK;
                 return Ok(_response);
             }
@@ -100,13 +99,13 @@ namespace MagicVillaWebAPI.Controllers
                 if (createDto == null)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
                     _response.Result = createDto;
                     return BadRequest(_response);
                 }
                 Villa model = _mapper.Map<Villa>(createDto);
                 await _dbVilla.CreateAsync(model);
                 _response.Result = _mapper.Map<VillaDto>(model);
-                _response.IsSuccess = true;
                 _response.StatusCode = HttpStatusCode.Created;
                 return CreatedAtRoute("GetVilla", new { id = model.Id }, _response);
             }
@@ -129,17 +128,18 @@ namespace MagicVillaWebAPI.Controllers
                 if (id == 0)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
                 var villa = await _dbVilla.GetAsync(x => x.Id == id);
                 if (villa == null)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
+                    _response.IsSuccess = false;
                     return NotFound(_response);
                 }
                 await _dbVilla.RemoveAsync(villa);
                 _response.StatusCode = HttpStatusCode.NoContent;
-                _response.IsSuccess = true;
                 return Ok(_response);
             }
             catch (Exception ex)
@@ -160,6 +160,7 @@ namespace MagicVillaWebAPI.Controllers
                 if (updateDto == null || id != updateDto.Id)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
                 Villa model = _mapper.Map<Villa>(updateDto);
