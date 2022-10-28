@@ -1,5 +1,8 @@
-﻿using MagicVillaWeb.Interfaces;
+﻿using MagicVillaUtility;
+using MagicVillaWeb.Interfaces;
 using MagicVillaWeb.Models;
+using Newtonsoft.Json;
+using System.Text;
 
 namespace MagicVillaWeb.Services
 {
@@ -13,7 +16,7 @@ namespace MagicVillaWeb.Services
             this.httpClient = httpClient;
         }
 
-        public Task<T> SendAsync<T>(APIRequest request)
+        public async Task<T> SendAsync<T>(APIRequest request)
         {
             try
             {
@@ -23,10 +26,42 @@ namespace MagicVillaWeb.Services
                 message.RequestUri = new Uri(request.Url);
                 if (request.Data != null)
                 {
-                    message.Content = new StringContent(JsonConvert)
+                    message.Content = new StringContent(JsonConvert.SerializeObject(request.Data),
+                        Encoding.UTF8,
+                        "application/json");
                 }
+                switch (request.ApiType)
+                {
+                    case StaticDetails.ApiType.POST:
+                        message.Method = HttpMethod.Post;
+                        break;
+                    case StaticDetails.ApiType.PUT:
+                        message.Method = HttpMethod.Put;
+                        break;
+                    case StaticDetails.ApiType.DELETE:
+                        message.Method = HttpMethod.Delete;
+                        break;
+                    default:
+                        message.Method = HttpMethod.Get;
+                        break;
+                }
+                HttpResponseMessage apiResponseMessage = null;
+                apiResponseMessage = await client.SendAsync(message);
+                var apiContent = await apiResponseMessage.Content.ReadAsStringAsync();
+                var apiResponse = JsonConvert.DeserializeObject<T>(apiContent);
+                return apiResponse;
             }
-            catch (Exception ex) { }
+            catch (Exception ex)
+            {
+                var dto = new APIResponse
+                {
+                    ErrorMessages = new List<string> { Convert.ToString(ex.Message) },
+                    IsSuccess = false
+                };
+                var res = JsonConvert.SerializeObject(dto);
+                var apiResponse = JsonConvert.DeserializeObject<T>(res);
+                return apiResponse;
+            }
         }
     }
 }

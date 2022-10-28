@@ -1,6 +1,10 @@
-﻿namespace MagicVillaWeb.Interfaces
+﻿using MagicVillaWeb.Models;
+
+namespace MagicVillaWeb.Interfaces
 {
-    public class IBaseService
+    public interface IBaseService
     {
+        APIResponse response { get; set; }
+        Task<T> SendAsync<T>(APIRequest request);
     }
 }
