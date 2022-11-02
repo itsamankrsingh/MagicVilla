@@ -33,7 +33,7 @@ namespace MagicVillaWebAPI.Controllers
             try
             {
                 _logger.Log("Getting All VillaNumbers", LogLevel.Info);
-                IEnumerable<VillaNumber> villaNumbers = await _dbVillaNumbers.GetAllAsync();
+                IEnumerable<VillaNumber> villaNumbers = await _dbVillaNumbers.GetAllAsync(includeProperties: "Villa");
                 _response.Result = _mapper.Map<List<VillaNumberDto>>(villaNumbers);
                 _response.IsSuccess = true;
                 _response.StatusCode = HttpStatusCode.OK;
