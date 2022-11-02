@@ -108,6 +108,7 @@ namespace MagicVillaWebAPI.Controllers
                     return BadRequest(_response);
                 }
                 Villa model = _mapper.Map<Villa>(createDto);
+                model.CreatedDate = DateTime.Now;
                 await _dbVilla.CreateAsync(model);
                 _response.Result = _mapper.Map<VillaDto>(model);
                 _response.StatusCode = HttpStatusCode.Created;
