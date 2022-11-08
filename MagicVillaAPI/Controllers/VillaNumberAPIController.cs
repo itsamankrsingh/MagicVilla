@@ -99,13 +99,23 @@ namespace MagicVillaWebAPI.Controllers
                 }
                 if (await _dbVilla.GetAsync((u => u.Id == createDto.VillaID), false) == null)
                 {
-                    ModelState.AddModelError("InvalidVillaIdError", "VillaId does not Exists!");
-                    return BadRequest(ModelState);
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages = new List<string>
+                    {
+                        "Bad Request"
+                    };
+                    return BadRequest(_response);
                 }
                 if (await _dbVillaNumbers.GetAsync((x => x.VillaNo == createDto.VillaNo), false) != null)
                 {
-                    ModelState.AddModelError("UniqueVillaNoRequiredError", "Villa already Exists!");
-                    return BadRequest(ModelState);
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessages = new List<string>
+                    {
+                        "Bad Request"
+                    };
+                    return BadRequest(_response);
                 }
                 VillaNumber model = _mapper.Map<VillaNumber>(createDto);
                 model.CreatedDate = DateTime.Now;
@@ -171,7 +181,7 @@ namespace MagicVillaWebAPI.Controllers
                 }
                 if (await _dbVilla.GetAsync((u => u.Id == updateDto.VillaID), false) == null)
                 {
-                    ModelState.AddModelError("InvalidVillaIdError", "VillaId does not Exists!");
+                    ModelState.AddModelError("ErrorMessages", "VillaId does not Exists!");
                     return BadRequest(ModelState);
                 }
                 var villaNumber = await _dbVillaNumbers.GetAsync((x => x.VillaNo == villaNo), false);
