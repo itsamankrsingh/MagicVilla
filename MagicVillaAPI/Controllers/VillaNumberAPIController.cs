@@ -103,7 +103,7 @@ namespace MagicVillaWebAPI.Controllers
                     _response.IsSuccess = false;
                     _response.ErrorMessages = new List<string>
                     {
-                        "Bad Request"
+                        "Villa already exists!"
                     };
                     return BadRequest(_response);
                 }
@@ -113,7 +113,7 @@ namespace MagicVillaWebAPI.Controllers
                     _response.IsSuccess = false;
                     _response.ErrorMessages = new List<string>
                     {
-                        "Bad Request"
+                        "Villa Number already exists!"
                     };
                     return BadRequest(_response);
                 }
